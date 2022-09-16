@@ -1,8 +1,8 @@
 public class Product {
     private String name;
-    private double price = 0;
+    private double price;
     // true - товар по акции, false - без акции
-    private boolean promo = false;
+    private boolean promo;
     private int count = 0;
 
     public Product(String name, double price, boolean promo) {
@@ -52,5 +52,10 @@ public class Product {
     public double getSum() {
         int sale = count / 3;
         return (count - sale) * price;
+    }
+
+    @Override
+    public String toString() {
+        return getName() + " " + getPrice() + " " + isPromo() + " " + getCount();
     }
 }

@@ -15,9 +15,15 @@ public class Main {
         // Создать корзину и инициализировать списком продуктов
         Basket basket = new Basket(products);
         // Загрузить корзину из файла
-        File basketFile = new File("basket.txt");
-        if(basketFile.exists())
-            basket = Basket.loadFromTxtFile(basketFile);
+        File basketTxtFile = new File("basket.txt");
+        File basketBinFile = new File("basket.bin");
+        if(basketBinFile.exists()) {
+            Basket basket1 = Basket.loadFromBinFile(basketBinFile);
+            if(basket1 != null)
+                basket = basket1;
+            else
+                System.out.println("basket1 is null");
+        }
 
         printProducts(products);
 
@@ -37,7 +43,8 @@ public class Main {
                         // Добавить в корзину
                         basket.addToCart(productNumber, productCount);
                         // Сохранить корзину
-                        basket.saveTxt(basketFile);
+                        basket.saveTxt(basketTxtFile);
+                        basket.saveBin(basketBinFile);
                     } catch (NumberFormatException e) {
                         System.out.println("Введены нечисловые данные!");
                     }

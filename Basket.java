@@ -1,3 +1,8 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,25 +45,23 @@ public class Basket implements Serializable {
     }
 
     public void saveTxt(File file) {
-        try(PrintWriter writer = new PrintWriter(file))
-        {
+        try (PrintWriter writer = new PrintWriter(file)) {
             // идем по массиву продуктов и записываем каждый продукта в файл
             for (Product product : products) {
                 writer.println(product.toString());
             }
             writer.flush();
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
     }
 
     public static Basket loadFromTxtFile(File file) {
-        try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             List<Product> productList = new ArrayList<>();
             // читаем построчно продукты
             String sProduct;
-            while((sProduct = reader.readLine()) != null) {
+            while ((sProduct = reader.readLine()) != null) {
                 // разобьем строку, получив информацию о продукте
                 String[] productInfo = sProduct.split(" ");
                 String name = productInfo[0];
@@ -78,27 +81,45 @@ public class Basket implements Serializable {
         return null;
     }
 
-    public  void saveBin(File file) {
-        try(ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(file)))
-        {
+    public void saveBin(File file) {
+        try (ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(file))) {
             writer.writeObject(this);
             writer.flush();
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
     }
 
     public static Basket loadFromBinFile(File file) {
         Basket basket = null;
-        try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(file)))
-        {
+        try (ObjectInputStream reader = new ObjectInputStream(new FileInputStream(file))) {
             basket = (Basket) reader.readObject();
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             System.out.println(ex.getMessage());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
+        }
+        return basket;
+    }
+
+    public void saveJson(File file) {
+        try (FileWriter writer = new FileWriter(file)) {
+            GsonBuilder gsBuilder = new GsonBuilder();
+            Gson gson = gsBuilder.setPrettyPrinting().create();
+            gson.toJson(this, writer);
+            writer.flush();
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public static Basket loadFromJsonFile(File file) {
+        Basket basket = null;
+        try (FileReader reader = new FileReader(file)) {
+            Gson gson = new Gson();
+            basket = gson.fromJson(reader, Basket.class);
+        } catch (IOException | JsonIOException | JsonSyntaxException ex) {
+            System.out.println(ex.getMessage());
         }
         return basket;
     }

@@ -17,9 +17,10 @@ public class Main {
         // Загрузить корзину из файла
         File basketTxtFile = new File("basket.txt");
         File basketBinFile = new File("basket.bin");
-        if(basketBinFile.exists()) {
-            Basket basket1 = Basket.loadFromBinFile(basketBinFile);
-            if(basket1 != null)
+        File basketJsonFile = new File("basket.json");
+        if (basketJsonFile.exists()) {
+            Basket basket1 = Basket.loadFromJsonFile(basketJsonFile);
+            if (basket1 != null)
                 basket = basket1;
             else
                 System.out.println("basket1 is null");
@@ -45,6 +46,7 @@ public class Main {
                         // Сохранить корзину
                         basket.saveTxt(basketTxtFile);
                         basket.saveBin(basketBinFile);
+                        basket.saveJson(basketJsonFile);
                     } catch (NumberFormatException e) {
                         System.out.println("Введены нечисловые данные!");
                     }

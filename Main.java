@@ -14,17 +14,30 @@ public class Main {
         };
         // Создать корзину и инициализировать списком продуктов
         Basket basket = new Basket(products);
+        // Настройки
+        File configFile = new File("config.xml");
+        Config config = new Config();
+        config.loadFromXml(configFile);
         // Загрузить корзину из файла
-        File basketTxtFile = new File("basket.txt");
-        File basketBinFile = new File("basket.bin");
-        File basketJsonFile = new File("basket.json");
-        if (basketJsonFile.exists()) {
-            Basket basket1 = Basket.loadFromJsonFile(basketJsonFile);
-            if (basket1 != null)
-                basket = basket1;
-            else
-                System.out.println("basket1 is null");
+        //File basketTxtFile = new File("basket.txt");
+        //File basketBinFile = new File("basket.bin");
+        //File basketJsonFile = new File("basket.json");
+        if(config.getLoad().enabled) {
+            File file = new File(config.getLoad().fileName);
+            if (file.exists()) {
+                Basket basket1;
+                if(config.getLoad().format.compareTo("json") == 0)
+                    basket1 = Basket.loadFromJsonFile(file);
+                else
+                    basket1 = Basket.loadFromTxtFile(file);
+                if (basket1 != null)
+                    basket = basket1;
+                else
+                    System.out.println("basket1 is null");
+            }
         }
+
+        File saveFile = new File(config.getSave().fileName);
 
         printProducts(products);
 
@@ -44,9 +57,12 @@ public class Main {
                         // Добавить в корзину
                         basket.addToCart(productNumber, productCount);
                         // Сохранить корзину
-                        basket.saveTxt(basketTxtFile);
-                        basket.saveBin(basketBinFile);
-                        basket.saveJson(basketJsonFile);
+                        if(config.getSave().enabled) {
+                            if(config.getSave().format.compareTo("json") == 0)
+                                basket.saveJson(saveFile);
+                            else
+                                basket.saveTxt(saveFile);
+                        }
                     } catch (NumberFormatException e) {
                         System.out.println("Введены нечисловые данные!");
                     }
